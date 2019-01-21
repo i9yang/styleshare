@@ -9,6 +9,7 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
 import re.stylesha.test.dto.Goods
 import re.stylesha.test.repository.GoodRepository
+import java.io.InputStream
 
 @Component
 class DataLoader : ApplicationRunner {
@@ -17,7 +18,9 @@ class DataLoader : ApplicationRunner {
 
     override fun run(args: ApplicationArguments) {
         val objectMapper = ObjectMapper()
-        var goodsList = objectMapper.readValue<Goods>(ClassPathResource("data.json").file)
+
+        var inputStream : InputStream = ClassPathResource("data.json").inputStream
+        var goodsList = objectMapper.readValue<Goods>(inputStream)
 
         for(good in goodsList.goods) {
             var goodId = good.id
