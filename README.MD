@@ -1,0 +1,1 @@
+docker build https://raw.githubusercontent.com/i9yang/styleshare/master/Dcokerfile
