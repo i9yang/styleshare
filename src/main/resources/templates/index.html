@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>StyleShare Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<table>
+    <thead>
+        <tr>
+            <th>상품명</th>
+            <th>옵션명</th>
+            <th>재고</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <th:block th:each="good : ${goods}">
+            <tr th:each="option : ${good.options}">
+                <td>[[ ${good.name} ]]</td>
+                <td>size : [[ ${option.size }]] , color : [[ ${option.color} ]]</td>
+                <td>[[ ${option.stock }]]</td>
+                <td><button class="addCart" th:data-good-id="${good.id}" th:data-option-id="${option.id}">장바구니 담기</button></td>
+            </tr>
+        </th:block>
+    </tbody>
+</table>
+<br />
+<button onclick="location.href='/cart'">장바구니 가기</button>
+
+</body>
+<script
+        src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $(function(){
+        $(".addCart").on('click', function(){
+            var goodId = $(this).data("good-id");
+            var optionId = $(this).data("option-id");
+            $.ajax({
+                url : "/insertCart?optionId=" + optionId + "&goodId=" + goodId
+            }).done(function(result){
+                alert("장바구니에 상품이 담겼습니다.")
+            }).fail(function(result){
+                alert(result)
+            })
+        });
+    })
+</script>
+</html>
