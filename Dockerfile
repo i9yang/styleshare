@@ -8,6 +8,7 @@ COPY --from=0 /app/styleshare /app
 RUN mvn package -DskipTests=true
 
 FROM openjdk:8-jdk-alpine
+COPY ld-musl-x86_64.path /etc/ld-musl-x86_64.pat
 WORKDIR /app
 COPY --from=1 /app/target/test-0.0.1-SNAPSHOT.jar /app
 ENTRYPOINT ["java","-jar","test-0.0.1-SNAPSHOT.jar"]
