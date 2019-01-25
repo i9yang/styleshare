@@ -99,7 +99,7 @@
             SELECT
                 PROVIDER
                 , SUM(goodPrice) AS goodPrice
-                , CASE WHEN SHIPPING_CAN_BUNDLE = 'TRUE' THEN MIN(SHIPPING_PRICE) ELSE SUM(SHIPPING_PRICE) END AS shippingPrice
+                , CASE WHEN SHIPPING_CAN_BUNDLE = 'true' THEN MIN(SHIPPING_PRICE) ELSE SUM(SHIPPING_PRICE) END AS shippingPrice
             FROM (
                 SELECT
                     G.PROVIDER

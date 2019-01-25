@@ -52,8 +52,12 @@ class TestController {
     @GetMapping("/updateStock", produces = ["plain/text; charset=utf8"])
     fun updateCart(cart : Cart, modelMap : ModelMap) : ResponseEntity<String>{
         var option = repository.selectOptionStock(cart)
+        var c = Cart()
+        c.optionId = option.id
+        c.goodId = option.goodId
+        c.stock = cart.previousStock - cart.stock
 
-        if((option.stock - cart.stock) < 0) {
+        if(option.stock + c.stock < 0 || cart.stock < 0) {
             return ResponseEntity("0보다 작은 값은 설정 불가능합니다.", HttpStatus.INTERNAL_SERVER_ERROR)
         } else if(cart.stock == 0) {
             repository.deleteCart(cart)
@@ -61,10 +65,7 @@ class TestController {
             repository.updateCart(cart)
         }
 
-        var c = Cart()
-        c.optionId = option.id
-        c.goodId = option.goodId
-        c.stock = cart.previousStock - cart.stock
+
         repository.updateOption(c)
         return ResponseEntity("SUCCESS", HttpStatus.OK)
     }
