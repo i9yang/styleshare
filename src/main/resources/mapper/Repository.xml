@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="re.stylesha.test">
+    <select id="selectGoodList" resultType="re.stylesha.test.dto.Good">
+        SELECT
+            G.ID
+            , G.NAME
+            , G.PROVIDER
+            , G.PRICE
+            , G.SHIPPING_METHOD AS shippingMethod
+            , G.SHIPPING_PRICE AS shippingPrice
+            , G.SHIPPING_CAN_BUNDLE AS shippingCanBundle
+            , O.ID AS optionId
+            , O.COLOR AS optionColor
+            , O.SIZE AS optionSize
+            , O.STOCK AS optionStock
+        FROM GOOD G
+            , OPTION O
+        WHERE G.ID = O.GOOD_ID
+        ORDER BY G.ID, O.ID
+    </select>
+
+    <select id="selectCartList" resultType="re.stylesha.test.dto.Cart">
+        SELECT
+            C.ID
+            , G.ID As goodId
+            , G.NAME
+            , G.PROVIDER
+            , G.PRICE
+            , G.SHIPPING_METHOD AS shippingMethod
+            , G.SHIPPING_PRICE AS shippingPrice
+            , G.SHIPPING_CAN_BUNDLE AS shippingCanBundle
+            , O.ID AS optionId
+            , O.COLOR AS optionColor
+            , O.SIZE AS optionSize
+            , C.STOCK AS stock
+        FROM CART C
+            , GOOD G
+            , OPTION O
+        WHERE C.GOOD_ID = G.ID
+        AND   C.OPTION_ID = O.ID
+        ORDER BY G.PROVIDER,G.SHIPPING_CAN_BUNDLE,G.SHIPPING_PRICE, G.ID, O.ID
+    </select>
+
+    <select id="selectOption" parameterType="re.stylesha.test.dto.Cart" resultType="re.stylesha.test.dto.Option">
+        SELECT
+            ID
+            , GOOD_ID AS goodId
+            , COLOR
+            , SIZE
+            , STOCK
+        FROM OPTION
+        WHERE   ID = #{optionId}
+        AND     GOOD_ID = #{goodId}
+    </select>
+
+    <select id="selectCart" parameterType="re.stylesha.test.dto.Cart"  resultType="re.stylesha.test.dto.Cart">
+        SELECT
+            ID
+            , GOOD_ID AS goodId
+            , OPTION_ID AS optionId
+        FROM CART
+        WHERE   OPTION_ID = #{optionId}
+        AND     GOOD_ID = #{goodId}
+    </select>
+
+    <insert id="insertGood" parameterType="re.stylesha.test.dto.Good">
+        INSERT INTO GOOD(ID, NAME, PROVIDER, PRICE, SHIPPING_METHOD, SHIPPING_PRICE, SHIPPING_CAN_BUNDLE)
+        VALUES(#{id}, #{name}, #{provider}, #{price}, #{shippingMethod}, #{shippingPrice}, #{shippingCanBundle})
+    </insert>
+
+    <select id="insertOption" parameterType="re.stylesha.test.dto.Option">
+        INSERT INTO OPTION(ID, GOOD_ID, COLOR, SIZE, STOCK)
+        VALUES(#{id}, #{goodId}, #{color}, #{size}, #{stock})
+    </select>
+
+    <insert id="insertCart" parameterType="re.stylesha.test.dto.Cart">
+        INSERT INTO CART(GOOD_ID, OPTION_ID, STOCK)
+        VALUES(#{goodId}, #{optionId}, 1)
+    </insert>
+
+    <insert id="updateCartByGoodIdOptionID" parameterType="re.stylesha.test.dto.Cart">
+        UPDATE CART
+        SET    STOCK = STOCK + 1
+        WHERE  GOOD_ID = #{goodId}
+        AND    OPTION_ID = #{optionId}
+    </insert>
+
+    <insert id="updateOption" parameterType="re.stylesha.test.dto.Cart">
+        UPDATE OPTION
+        SET    STOCK = STOCK + #{stock}
+        WHERE  ID = #{optionId}
+        AND    GOOD_ID = #{goodId}
+    </insert>
+
+    <select id="selectCartPrice" resultType="Int">
+        SELECT COALESCE(SUM(goodPrice) + SUM(shippingPrice), 0)
+        FROM (
+            SELECT
+                PROVIDER
+                , SUM(goodPrice) AS goodPrice
+                , CASE WHEN SHIPPING_CAN_BUNDLE = 'TRUE' THEN MIN(SHIPPING_PRICE) ELSE SUM(SHIPPING_PRICE) END AS shippingPrice
+            FROM (
+                SELECT
+                    G.PROVIDER
+                    , G.ID
+                    , SUM(G.PRICE * C.STOCK) AS goodPrice
+                    , G.SHIPPING_PRICE
+                    , G.SHIPPING_CAN_BUNDLE
+                FROM CART C
+                    , GOOD G
+                WHERE C.GOOD_ID = G.ID
+                GROUP BY G.PROVIDER, G.ID ,G.SHIPPING_PRICE, G.SHIPPING_CAN_BUNDLE
+            )
+            GROUP BY PROVIDER, SHIPPING_CAN_BUNDLE
+        )
+    </select>
+
+    <select id="selectOptionStock" parameterType="re.stylesha.test.dto.Cart" resultType="re.stylesha.test.dto.Option">
+        SELECT
+            O.STOCK
+            , O.ID
+            , O.GOOD_ID AS goodId
+        FROM GOOD G
+            , OPTION O
+            , CART C
+        WHERE G.ID = C.GOOD_ID
+        AND   O.ID = C.OPTION_ID
+        AND   C.ID = #{id}
+    </select>
+
+    <update id="updateCart" parameterType="re.stylesha.test.dto.Cart">
+        UPDATE CART
+        SET STOCK = #{stock}
+        WHERE ID = #{id}
+    </update>
+
+    <delete id="deleteCart" parameterType="re.stylesha.test.dto.Cart">
+        DELETE CART
+        WHERE ID = #{id}
+    </delete>
+</mapper>

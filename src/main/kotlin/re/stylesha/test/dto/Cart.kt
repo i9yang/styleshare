@@ -1,16 +1,18 @@
 package re.stylesha.test.dto
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.Table
-
-@Entity
-@Table(name = "CART")
-data class Cart(
-        @Id
-        @GeneratedValue
-        var cartId: Int?,
-        var goodId: Int,
-        var optionId: Int
-)
+class Cart {
+    var id: Int = 0
+    var goodId: String = ""
+    var optionId: String = ""
+    var stock : Int = 0
+    var previousStock : Int = 0
+    var name = ""
+    var provider = ""
+    var price = 0
+    var shippingMethod = ""
+    var shippingPrice = 0
+    var shippingCanBundle = ""
+    var optionColor = ""
+    var optionSize = ""
+    var optionStock = 0
+}

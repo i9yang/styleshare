@@ -3,6 +3,15 @@
 <head>
     <title>StyleShare Test</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+      table {
+        width: 100%;
+        border: 1px solid #444444;
+      }
+      th, td {
+        border: 1px solid #444444;
+      }
+    </style>
 </head>
 <body>
 <table>
@@ -15,12 +24,12 @@
         </tr>
     </thead>
     <tbody>
-        <th:block th:each="good : ${goods}">
-            <tr th:each="option : ${good.options}">
+        <th:block th:each="good : ${goodList}">
+            <tr>
                 <td>[[ ${good.name} ]]</td>
-                <td>size : [[ ${option.size }]] , color : [[ ${option.color} ]]</td>
-                <td>[[ ${option.stock }]]</td>
-                <td><button class="addCart" th:data-good-id="${good.id}" th:data-option-id="${option.id}">장바구니 담기</button></td>
+                <td>size : [[ ${good.optionSize }]] , color : [[ ${good.optionColor} ]]</td>
+                <td class="optionStock">[[ ${good.optionStock }]]</td>
+                <td><button class="addCart" th:data-good-id="${good.id}" th:data-option-id="${good.optionId}">장바구니 담기</button></td>
             </tr>
         </th:block>
     </tbody>
@@ -36,14 +45,15 @@
 <script type="text/javascript">
     $(function(){
         $(".addCart").on('click', function(){
-            var goodId = $(this).data("good-id");
-            var optionId = $(this).data("option-id");
+            var goodId = $(this).data("good-id")
+            var optionId = $(this).data("option-id")
             $.ajax({
                 url : "/insertCart?optionId=" + optionId + "&goodId=" + goodId
             }).done(function(result){
                 alert("장바구니에 상품이 담겼습니다.")
+                location.reload()
             }).fail(function(result){
-                alert(result)
+                alert(result.responseText)
             })
         });
     })
