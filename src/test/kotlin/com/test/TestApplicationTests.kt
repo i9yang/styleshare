@@ -1,4 +1,4 @@
-package re.stylesha.test
+package com.test
 
 import org.junit.Test
 import org.junit.runner.RunWith
