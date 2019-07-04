@@ -1,1 +1,1 @@
-/app/mvnw bootRun
+/home/ec2-user/app/mvnw bootRun
