@@ -1,1 +1,1 @@
-./mvnw bootRun
+/app/mvnw bootRun
